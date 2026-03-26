@@ -26,7 +26,7 @@ Incident contexts are runtime-managed via API/UI and supplied to investigations 
 ### Step Functions Workflow
 
 <p align="center">
-  <img src="docs/images/architecture/stepfunctions-graph.svg" alt="Step Functions state machine graph" width="340" />
+  <img src="docs/images/architecture/stepfunctions-graph.png" alt="Step Functions state machine graph" width="400" />
 </p>
 
 ### Operational Flows
