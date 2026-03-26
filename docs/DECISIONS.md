@@ -6,7 +6,7 @@ We do not continuously scan all logs/telemetry across the account.
 
 ## ADR-002: Deterministic workers, bounded AI
 Metrics, logs, and traces workers are deterministic.  
-GenAI is used for bounded hypothesis evaluation only.
+GenAI is used as a bounded advisory layer: it evaluates competing hypotheses, assigns comparative plausibility with reasoning, and identifies missing evidence.
 
 ## ADR-003: Scope before retrieval
 Every investigation must first define relevant investigation scope, time window, and data sources.  

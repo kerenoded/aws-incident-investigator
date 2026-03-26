@@ -25,7 +25,7 @@ Output:
 Purpose:
 - compare competing causes
 - help interpret evidence that spans multiple telemetry sources
-- provide a stronger GenAI story than simple text formatting
+- surface missing evidence that would improve investigation confidence
 
 ## AI Input Rules
 AI should receive:
