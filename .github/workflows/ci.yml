@@ -48,6 +48,9 @@ jobs:
       - name: Typecheck frontend
         run: npm --prefix frontend run typecheck
 
+      - name: Run frontend tests
+        run: npm --prefix frontend run test
+
       - name: Build frontend
         run: npm --prefix frontend run build
 
