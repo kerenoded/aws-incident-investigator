@@ -1,0 +1,4 @@
+# CDK infrastructure dependencies
+# Lambda runtime dependencies (boto3) are provided by the Lambda runtime.
+aws-cdk-lib>=2.130.0
+constructs>=10.0.0

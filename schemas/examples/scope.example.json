@@ -1,0 +1,50 @@
+{
+  "incidentId": "inc-20260320-001",
+  "service": "checkout-service",
+  "region": "eu-west-1",
+  "incidentWindow": {
+    "start": "2026-03-20T10:00:00Z",
+    "end": "2026-03-20T10:15:00Z"
+  },
+  "baselineWindow": {
+    "start": "2026-03-20T09:45:00Z",
+    "end": "2026-03-20T10:00:00Z"
+  },
+  "logGroups": [
+    "/aws/lambda/checkout-service"
+  ],
+  "metrics": [
+    {
+      "namespace": "AWS/ApplicationELB",
+      "metricName": "TargetResponseTime",
+      "dimensions": {
+        "TargetGroup": "checkout-service-tg"
+      },
+      "stat": "p95"
+    },
+    {
+      "namespace": "AWS/ApplicationELB",
+      "metricName": "HTTPCode_Target_5XX_Count",
+      "dimensions": {
+        "TargetGroup": "checkout-service-tg"
+      },
+      "stat": "Sum"
+    },
+    {
+      "namespace": "AWS/Lambda",
+      "metricName": "Duration",
+      "dimensions": {
+        "ServiceName": "checkout-service",
+        "ClusterName": "main-cluster"
+      },
+      "stat": "Average"
+    }
+  ],
+  "traceServices": [
+    "checkout-service"
+  ],
+  "dependencies": [
+    "auth-service",
+    "orders-db"
+  ]
+}

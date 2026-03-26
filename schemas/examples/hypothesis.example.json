@@ -1,0 +1,7 @@
+{
+  "id": "h1",
+  "cause": "checkout-service runtime latency regression",
+  "rationale": "p95 latency increased 4.8x vs baseline and TimeoutException errors increased in the same incident window.",
+  "supportingEvidenceIds": ["ev-metrics-001", "ev-logs-002", "ev-traces-003"],
+  "confidence": 0.78
+}

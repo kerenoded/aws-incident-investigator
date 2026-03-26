@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "IncidentContext",
+  "description": "Runtime-managed incident context definition used for incident-context-first control plane. Documentation-only: this schema defines the canonical shape of a context object but is not validated at runtime by the contexts_api handler.",
+  "type": "object",
+  "required": [
+    "contextId",
+    "name",
+    "region",
+    "createdAt",
+    "updatedAt",
+    "createdBy",
+    "updatedBy"
+  ],
+  "properties": {
+    "contextId": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "region": {
+      "type": "string",
+      "minLength": 1
+    },
+    "logGroups": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "metricDescriptors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "xrayServices": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "createdBy": {
+      "type": "string"
+    },
+    "updatedBy": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

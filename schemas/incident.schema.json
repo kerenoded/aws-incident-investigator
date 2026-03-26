@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "IncidentPayload",
+  "description": "Input payload for starting an incident investigation. Required by the Step Functions workflow, Scope Builder, and all trigger paths.",
+  "type": "object",
+  "required": ["incidentId", "signalType", "windowStart", "windowEnd", "region"],
+  "properties": {
+    "incidentId": {
+      "type": "string",
+      "description": "Unique identifier for the incident. Used to correlate all downstream outputs (e.g. inc-20260320-001)."
+    },
+    "service": {
+      "type": "string",
+      "description": "Name of the impacted service resolved from incident context snapshot at trigger time."
+    },
+    "environment": {
+      "type": "string",
+      "description": "Deployment environment (e.g. production, staging)."
+    },
+    "region": {
+      "type": "string",
+      "description": "AWS region where the incident is occurring (e.g. eu-west-1)."
+    },
+    "signalType": {
+      "type": "string",
+      "description": "The type of incident signal (e.g. latency_spike, error_spike, availability_drop). Describes what anomaly was observed, not how the investigation was triggered."
+    },
+    "contextId": {
+      "type": "string",
+      "description": "Incident context identifier used by the context-first trigger path."
+    },
+    "triggerModel": {
+      "type": "string",
+      "enum": ["context"],
+      "description": "Trigger payload model used by runtime."
+    },
+    "contextSnapshot": {
+      "$ref": "./context-snapshot.schema.json",
+      "description": "Immutable minimal context snapshot captured at trigger time for context-first runs."
+    },
+    "triggerSource": {
+      "type": "string",
+      "enum": ["cloudwatch_alarm", "manual"],
+      "description": "How the investigation was initiated. 'cloudwatch_alarm' = automated alert from CloudWatch; 'manual' = operator-initiated via API or UI."
+    },
+    "severity": {
+      "type": "string",
+      "description": "Incident severity level (e.g. sev1, sev2). Optional metadata for triage context."
+    },
+    "windowStart": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Start of the incident time window (ISO 8601 UTC). Defines the period the investigation focuses on."
+    },
+    "windowEnd": {
+      "type": "string",
+      "format": "date-time",
+      "description": "End of the incident time window (ISO 8601 UTC). Must be after windowStart."
+    }
+  },
+  "additionalProperties": true
+}

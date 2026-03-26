@@ -1,0 +1,229 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FinalReport",
+  "description": "Incident investigation report produced by the Final Report Builder.",
+  "type": "object",
+  "required": ["incidentId", "summary", "topHypotheses", "evidenceHighlights"],
+  "properties": {
+    "incidentId": { "type": "string" },
+    "summary": { "type": "string" },
+    "topHypotheses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["cause", "confidence"],
+        "properties": {
+          "cause": { "type": "string" },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "supportingEvidenceIds": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "evidenceHighlights": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "incidentWindow": {
+      "type": "object",
+      "properties": {
+        "start": { "type": "string", "format": "date-time" },
+        "end": { "type": "string", "format": "date-time" }
+      }
+    },
+    "baselineWindow": {
+      "type": "object",
+      "properties": {
+        "start": { "type": "string", "format": "date-time" },
+        "end": { "type": "string", "format": "date-time" }
+      }
+    },
+    "workerErrors": {
+      "type": "array",
+      "description": "Aggregated non-fatal errors from workers, for transparency.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "aiAssessments": {
+      "type": "array",
+      "description": "AI plausibility assessments per hypothesis. Present only when AI evaluation ran and returned results.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "cause": { "type": "string" },
+          "plausibility": { "type": "number", "minimum": 0, "maximum": 1 },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "aiNextBestActions": {
+      "type": "array",
+      "description": "Optional AI-suggested next investigative actions. Advisory only.",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["action", "why", "evidenceIds", "expectedSignal", "confidence"],
+        "properties": {
+          "action": { "type": "string" },
+          "why": { "type": "string" },
+          "evidenceIds": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "pattern": "^ev-[a-z0-9]+-[0-9]+$"
+            }
+          },
+          "expectedSignal": { "type": "string" },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+    "confidenceExplanation": {
+      "type": "object",
+      "description": "Bounded explanation of why the top deterministic hypothesis ranked highest, strongest supporting evidence, missing evidence, and deterministic vs AI contribution.",
+      "required": [
+        "topHypothesisCause",
+        "whyRankedHighest",
+        "strongestEvidence",
+        "missingEvidence",
+        "contribution"
+      ],
+      "properties": {
+        "topHypothesisCause": { "type": "string" },
+        "whyRankedHighest": { "type": "string" },
+        "strongestEvidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["evidenceId", "source", "findingType", "score", "summary"],
+            "properties": {
+              "evidenceId": { "type": "string" },
+              "source": { "type": "string" },
+              "findingType": { "type": "string" },
+              "score": { "type": "number", "minimum": 0, "maximum": 1 },
+              "summary": { "type": "string" }
+            }
+          }
+        },
+        "missingEvidence": {
+          "type": "object",
+          "required": ["aiIdentified", "collectionGaps"],
+          "properties": {
+            "aiIdentified": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "collectionGaps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["source", "reason"],
+                "properties": {
+                  "source": { "type": "string" },
+                  "reason": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "contribution": {
+          "type": "object",
+          "required": ["rankingDriver", "deterministic", "ai"],
+          "properties": {
+            "rankingDriver": {
+              "type": "string",
+              "enum": ["deterministic"]
+            },
+            "deterministic": {
+              "type": "object",
+              "required": ["topConfidence", "runnerUpConfidence", "confidenceDelta"],
+              "properties": {
+                "topConfidence": { "type": "number", "minimum": 0, "maximum": 1 },
+                "runnerUpConfidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+                "confidenceDelta": { "type": ["number", "null"] }
+              }
+            },
+            "ai": {
+              "type": "object",
+              "required": ["assessmentAvailable", "topHypothesisMatch", "plausibility", "reason"],
+              "properties": {
+                "assessmentAvailable": { "type": "boolean" },
+                "topHypothesisMatch": { "type": ["boolean", "null"] },
+                "plausibility": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+                "reason": { "type": ["string", "null"] }
+              }
+            }
+          }
+        }
+      }
+    },
+    "operatorFocus": {
+      "type": "object",
+      "description": "Deterministic operator-focused summary derived strictly from strongest supporting evidence.",
+      "required": [
+        "mostLikelyAffectedComponent",
+        "primaryImplicatedResource",
+        "topErrorPattern",
+        "whereToLookFirst"
+      ],
+      "properties": {
+        "mostLikelyAffectedComponent": { "type": ["string", "null"] },
+        "primaryImplicatedResource": {
+          "type": ["object", "null"],
+          "properties": {
+            "evidenceId": { "type": "string" },
+            "source": { "type": "string" },
+            "resourceType": { "type": ["string", "null"] },
+            "resourceName": { "type": ["string", "null"] },
+            "findingType": { "type": ["string", "null"] },
+            "score": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+            "summary": { "type": "string" }
+          }
+        },
+        "topErrorPattern": {
+          "type": ["object", "null"],
+          "properties": {
+            "evidenceId": { "type": ["string", "null"] },
+            "source": { "type": ["string", "null"] },
+            "findingType": { "type": ["string", "null"] },
+            "pattern": { "type": "string" },
+            "summary": { "type": "string" },
+            "incidentCount": { "type": ["number", "integer", "null"] },
+            "baselineCount": { "type": ["number", "integer", "null"] },
+            "changeRatio": { "type": ["number", "null"] },
+            "exceptionSamples": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Up to 3 concrete exception/error message samples from the incident window. Present only when captured by the logs worker."
+            }
+          }
+        },
+        "traceDependencyHint": {
+          "type": ["object", "null"],
+          "description": "Optional X-Ray dependency-fault hint to keep downstream trace evidence visible in operator guidance.",
+          "properties": {
+            "evidenceId": { "type": ["string", "null"] },
+            "resourceName": { "type": ["string", "null"] },
+            "summary": { "type": "string" },
+            "score": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+            "subsegmentName": { "type": ["string", "null"] },
+            "namespace": { "type": ["string", "null"] },
+            "httpStatus": { "type": ["number", "integer", "null"] },
+            "occurrences": { "type": ["number", "integer", "null"] },
+            "sampledTraceCount": { "type": ["number", "integer", "null"] }
+          }
+        },
+        "whereToLookFirst": { "type": "string" }
+      }
+    }
+  },
+  "additionalProperties": true
+}

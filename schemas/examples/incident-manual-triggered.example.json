@@ -1,0 +1,11 @@
+{
+  "incidentId": "inc-20260320-002",
+  "signalType": "latency_spike",
+  "triggerSource": "manual",
+  "triggerModel": "context",
+  "contextId": "ctx-4f7a1e9d2c3b",
+  "environment": "production",
+  "region": "eu-west-1",
+  "windowStart": "2026-03-20T09:30:00Z",
+  "windowEnd": "2026-03-20T09:45:00Z"
+}

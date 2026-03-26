@@ -1,0 +1,9 @@
+# Development and test dependencies.
+# Lambda runtime dependencies (boto3) are provided by the Lambda runtime,
+# but boto3/botocore are listed here so tests can import from botocore.exceptions.
+pytest>=8.0
+pytest-mock>=3.14
+jsonschema>=4.21
+referencing>=0.35
+boto3>=1.34
+ruff>=0.11

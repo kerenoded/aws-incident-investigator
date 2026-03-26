@@ -1,0 +1,151 @@
+{
+  "incidentId": "inc-20260320-001",
+  "summary": "Most likely cause is a runtime latency regression in checkout-service. p95 latency increased 4.8x and TimeoutException errors increased 12x vs baseline, with the Lambda function identified as the dominant latency segment.",
+  "topHypotheses": [
+    {
+      "cause": "runtime latency regression",
+      "confidence": 0.78,
+      "supportingEvidenceIds": ["ev-metrics-001", "ev-logs-002", "ev-traces-001"]
+    },
+    {
+      "cause": "application error surge",
+      "confidence": 0.16,
+      "supportingEvidenceIds": ["ev-logs-002"]
+    },
+    {
+      "cause": "downstream database latency increase",
+      "confidence": 0.06,
+      "supportingEvidenceIds": []
+    }
+  ],
+  "evidenceHighlights": [
+    "p95 latency increased 4.8x vs baseline (3200ms vs 670ms)",
+    "TimeoutException errors increased 12x vs baseline (243 vs 20)",
+    "Dominant segment in sampled checkout-service traces is checkout-service Lambda (100% of sampled segment time)"
+  ],
+  "incidentWindow": {
+    "start": "2026-03-20T10:00:00Z",
+    "end": "2026-03-20T10:15:00Z"
+  },
+  "baselineWindow": {
+    "start": "2026-03-20T09:45:00Z",
+    "end": "2026-03-20T10:00:00Z"
+  },
+  "workerErrors": [],
+  "confidenceExplanation": {
+    "topHypothesisCause": "runtime latency regression",
+    "whyRankedHighest": "Deterministic ranking selected this hypothesis by confidence gap (78% vs 16%; delta 62%) with 3 strongest supporting evidence item(s).",
+    "strongestEvidence": [
+      {
+        "evidenceId": "ev-metrics-001",
+        "source": "metrics",
+        "findingType": "latency_spike",
+        "score": 0.91,
+        "summary": "p95 latency increased 4.8x vs baseline (3200ms vs 670ms)"
+      },
+      {
+        "evidenceId": "ev-traces-001",
+        "source": "traces",
+        "findingType": "trace_latency_spike",
+        "score": 0.88,
+        "summary": "X-Ray response time for checkout-service changed 4.8x vs baseline"
+      },
+      {
+        "evidenceId": "ev-logs-002",
+        "source": "logs",
+        "findingType": "error_log_spike",
+        "score": 0.74,
+        "summary": "TimeoutException errors increased 12x vs baseline (243 vs 20)"
+      }
+    ],
+    "missingEvidence": {
+      "aiIdentified": [
+        "DynamoDB item schema and recent table changes",
+        "Lambda cold start metrics during the incident window"
+      ],
+      "collectionGaps": []
+    },
+    "contribution": {
+      "rankingDriver": "deterministic",
+      "deterministic": {
+        "topConfidence": 0.78,
+        "runnerUpConfidence": 0.16,
+        "confidenceDelta": 0.62
+      },
+      "ai": {
+        "assessmentAvailable": true,
+        "topHypothesisMatch": true,
+        "plausibility": 0.78,
+        "reason": "Latency spike and dominant Lambda segment in traces align strongly with a runtime regression.",
+        "unavailableReason": null
+      }
+    }
+  },
+  "operatorFocus": {
+    "mostLikelyAffectedComponent": "checkout-service",
+    "primaryImplicatedResource": {
+      "evidenceId": "ev-metrics-001",
+      "source": "metrics",
+      "resourceType": "lambda-function",
+      "resourceName": "checkout-service",
+      "findingType": "latency_spike",
+      "score": 0.91,
+      "summary": "p95 latency increased 4.8x vs baseline (3200ms vs 670ms)"
+    },
+    "topErrorPattern": {
+      "evidenceId": "ev-logs-002",
+      "source": "logs",
+      "findingType": "error_log_spike",
+      "resourceName": "checkout-service",
+      "pattern": "TimeoutException",
+      "summary": "TimeoutException errors increased 12x vs baseline (243 vs 20)",
+      "incidentCount": 243,
+      "baselineCount": 20,
+      "changeRatio": 12.15,
+      "exceptionSamples": [
+        "TimeoutException: upstream call to payments-service exceeded 5000ms (req-id: abc123)",
+        "TimeoutException: DynamoDB GetItem timed out after 5000ms on table orders (req-id: def456)"
+      ]
+    },
+    "traceDependencyHint": {
+      "evidenceId": "ev-traces-003",
+      "resourceName": "checkout-service",
+      "summary": "Faulted downstream call in sampled checkout-service traces: dynamodb.get_item (fault, 6/10 traces)",
+      "score": 0.62,
+      "subsegmentName": "DynamoDB",
+      "namespace": "aws",
+      "httpStatus": 400,
+      "occurrences": 6,
+      "sampledTraceCount": 10
+    },
+    "whereToLookFirst": "Start with checkout-service logs — exception errors present; then correlate with checkout-service metrics in the incident window."
+  },
+  "aiAssessments": [
+    {
+      "cause": "runtime latency regression",
+      "plausibility": 0.78,
+      "reason": "Latency spike and dominant Lambda segment in traces align strongly with a runtime regression. Resource: checkout-service."
+    },
+    {
+      "cause": "application error surge",
+      "plausibility": 0.16,
+      "reason": "Error log signals are present but weaker than the latency evidence. Resource: checkout-service."
+    }
+  ],
+  "aiNextBestActions": [
+    {
+      "action": "Inspect Lambda function duration and memory metrics during the incident window",
+      "why": "Lambda is the dominant latency segment; duration spike may indicate a timeout or resource exhaustion.",
+      "evidenceIds": ["ev-metrics-001", "ev-traces-001"],
+      "expectedSignal": "Duration approaching or exceeding configured timeout, or memory utilisation spike",
+      "confidence": 0.79
+    },
+    {
+      "action": "Inspect dependency timeout distribution in trace/log samples",
+      "why": "TimeoutException is the dominant error pattern during the incident window.",
+      "evidenceIds": ["ev-logs-002", "ev-metrics-001"],
+      "expectedSignal": "A concentrated timeout hotspot in one downstream dependency",
+      "confidence": 0.68
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Scope",
+  "description": "Investigation scope produced by the Scope Builder. Passed to all workers and used throughout the investigation pipeline.",
+  "type": "object",
+  "required": [
+    "incidentId",
+    "service",
+    "region",
+    "incidentWindow",
+    "baselineWindow",
+    "logGroups",
+    "metrics",
+    "traceServices"
+  ],
+  "properties": {
+    "incidentId": {
+      "type": "string",
+      "description": "Unique identifier for the incident, correlating all worker outputs."
+    },
+    "signalType": {
+      "type": "string",
+      "description": "Trigger signal type (e.g. error_spike, latency_spike), propagated for signal-aware worker behavior."
+    },
+    "service": {
+      "type": "string",
+      "description": "Primary impacted service name."
+    },
+    "region": {
+      "type": "string",
+      "description": "AWS region for the investigation (e.g. eu-west-1)."
+    },
+    "incidentWindow": {
+      "$ref": "#/$defs/timeWindow",
+      "description": "Active incident time window workers should query."
+    },
+    "baselineWindow": {
+      "$ref": "#/$defs/timeWindow",
+      "description": "Baseline comparison window (default: immediately preceding window of equal duration, per ADR-004)."
+    },
+    "logGroups": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "CloudWatch log group ARNs or names targeted for log retrieval."
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/metricDescriptor"
+      },
+      "description": "CloudWatch metrics to query for both incident and baseline windows."
+    },
+    "traceServices": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "X-Ray service names to query for trace analysis."
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Downstream service dependencies of the primary service."
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "timeWindow": {
+      "type": "object",
+      "required": [
+        "start",
+        "end"
+      ],
+      "properties": {
+        "start": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Window start time (ISO 8601 UTC)."
+        },
+        "end": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Window end time (ISO 8601 UTC)."
+        }
+      },
+      "additionalProperties": false
+    },
+    "metricDescriptor": {
+      "type": "object",
+      "required": [
+        "namespace",
+        "metricName",
+        "dimensions",
+        "stat"
+      ],
+      "properties": {
+        "namespace": {
+          "type": "string",
+          "description": "CloudWatch metric namespace (e.g. AWS/ApplicationELB)."
+        },
+        "metricName": {
+          "type": "string",
+          "description": "CloudWatch metric name (e.g. TargetResponseTime)."
+        },
+        "dimensions": {
+          "type": "object",
+          "description": "CloudWatch dimension key-value pairs.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "stat": {
+          "type": "string",
+          "description": "Statistic to retrieve (e.g. p95, Average, Sum)."
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

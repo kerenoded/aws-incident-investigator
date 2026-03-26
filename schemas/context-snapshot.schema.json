@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ContextSnapshot",
+  "description": "Minimal immutable incident-context snapshot captured at trigger time and passed as workflow input.",
+  "type": "object",
+  "required": [
+    "contextId",
+    "capturedAt",
+    "service",
+    "region",
+    "logGroups",
+    "metricDescriptors",
+    "xrayServices"
+  ],
+  "properties": {
+    "contextId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capturedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "service": {
+      "type": "string",
+      "minLength": 1
+    },
+    "region": {
+      "type": "string",
+      "minLength": 1
+    },
+    "logGroups": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "metricDescriptors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "xrayServices": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

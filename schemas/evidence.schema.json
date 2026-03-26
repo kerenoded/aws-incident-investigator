@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EvidenceFinding",
+  "description": "A single piece of evidence collected by a worker. Referenced by hypotheses, AI evaluation, and the final report via evidenceId.",
+  "type": "object",
+  "required": ["evidenceId", "source", "findingType", "summary"],
+  "properties": {
+    "evidenceId": {
+      "type": "string",
+      "description": "Stable identifier for this finding. Must be unique within an incident. Referenced by hypotheses, AI outputs, and the final report (e.g. ev-metrics-001)."
+    },
+    "source": {
+      "type": "string",
+      "enum": ["metrics", "logs", "traces"],
+      "description": "Which worker produced this finding."
+    },
+    "resourceType": {
+      "type": "string",
+      "description": "Type of AWS resource this finding relates to (e.g. api-gateway, rds-instance, lambda)."
+    },
+    "resourceName": {
+      "type": "string",
+      "description": "Name of the specific resource (e.g. checkout-service, orders-db)."
+    },
+    "findingType": {
+      "type": "string",
+      "description": "Machine-readable finding category (e.g. latency_spike, error_log_spike, trace_latency_spike)."
+    },
+    "summary": {
+      "type": "string",
+      "description": "Human-readable one-line description of the finding. Used in report evidence highlights."
+    },
+    "score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Relevance or anomaly score for this finding (0.0–1.0). Higher = more significant. Optional but recommended."
+    },
+    "details": {
+      "type": "object",
+      "description": "Source-specific structured data. For logs findings on ERROR/Exception patterns, may include an optional 'exceptionSamples' field: a list of up to 3 concrete exception message strings (each ≤200 chars) sampled from the incident window. The Candidate Hypotheses Builder reads exceptionSamples to enrich the application error surge cause label with the dominant exception class name (display-only, does not affect confidence)."
+    }
+  },
+  "additionalProperties": true
+}

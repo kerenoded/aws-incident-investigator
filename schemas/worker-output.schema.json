@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WorkerOutput",
+  "description": "Common envelope returned by all evidence workers.",
+  "type": "object",
+  "required": ["incidentId", "source", "findings"],
+  "properties": {
+    "incidentId": { "type": "string" },
+    "source": { "type": "string", "enum": ["metrics", "logs", "traces"] },
+    "findings": {
+      "type": "array",
+      "items": { "$ref": "evidence.schema.json" }
+    },
+    "errors": {
+      "type": "array",
+      "description": "Non-fatal errors encountered during evidence collection. Empty array means no errors.",
+      "items": {
+        "type": "object",
+        "required": ["source", "reason"],
+        "properties": {
+          "source": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      },
+      "default": []
+    }
+  },
+  "additionalProperties": true
+}

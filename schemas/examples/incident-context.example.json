@@ -1,0 +1,73 @@
+{
+  "contextId": "ctx-4f7a1e9d2c3b",
+  "name": "Payments Production",
+  "description": "Manual context for payment latency and error spikes",
+  "region": "eu-west-1",
+  "logGroups": [
+    "/aws/lambda/checkout-service",
+    "/aws/apigateway/a1b2c3d4e5",
+    "/aws/lambda/checkout-authorizer"
+  ],
+  "metricDescriptors": [
+    {
+      "namespace": "AWS/ApplicationELB",
+      "metricName": "TargetResponseTime",
+      "dimensions": {
+        "TargetGroup": "checkout-service-tg"
+      },
+      "stat": "p95"
+    },
+    {
+      "namespace": "AWS/ApiGateway",
+      "metricName": "5XXError",
+      "dimensions": {
+        "ApiName": "checkout-api",
+        "Stage": "prod"
+      },
+      "stat": "Sum"
+    },
+    {
+      "namespace": "AWS/ApiGateway",
+      "metricName": "4XXError",
+      "dimensions": {
+        "ApiName": "checkout-api",
+        "Stage": "prod"
+      },
+      "stat": "Sum"
+    },
+    {
+      "namespace": "AWS/ApiGateway",
+      "metricName": "Latency",
+      "dimensions": {
+        "ApiName": "checkout-api",
+        "Stage": "prod"
+      },
+      "stat": "p95"
+    },
+    {
+      "namespace": "AWS/ApiGateway",
+      "metricName": "IntegrationLatency",
+      "dimensions": {
+        "ApiName": "checkout-api",
+        "Stage": "prod"
+      },
+      "stat": "p95"
+    },
+    {
+      "namespace": "AWS/ApiGateway",
+      "metricName": "Count",
+      "dimensions": {
+        "ApiName": "checkout-api",
+        "Stage": "prod"
+      },
+      "stat": "Sum"
+    }
+  ],
+  "xrayServices": [
+    "checkout-service"
+  ],
+  "createdAt": "2026-03-19T09:00:00Z",
+  "updatedAt": "2026-03-19T09:15:00Z",
+  "createdBy": "cognito-sub-123",
+  "updatedBy": "cognito-sub-123"
+}

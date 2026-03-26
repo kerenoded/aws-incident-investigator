@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Hypothesis",
+  "description": "A single candidate root-cause hypothesis produced by the Candidate Hypotheses Builder. Referenced by the AI Hypothesis Evaluator and the Final Report Builder via id and supportingEvidenceIds.",
+  "type": "object",
+  "required": ["id", "cause", "rationale"],
+  "properties": {
+    "id": { "type": "string" },
+    "cause": { "type": "string" },
+    "rationale": { "type": "string" },
+    "supportingEvidenceIds": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+  },
+  "additionalProperties": true
+}
